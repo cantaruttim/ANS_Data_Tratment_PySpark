@@ -10,7 +10,6 @@ config_graph={"displayModeBar": False, "showTips": False}
 
 
 spark = SparkSession.builder.appName("Operadoras").getOrCreate()
-# spark
 
 ## ========== LENDO ARQUIVOS ==========
 
@@ -19,6 +18,10 @@ beneficiarios_ativos_estados = sorted(glob(r'dadosFTP/SIB/Ativos/*.csv'))
 beneficiariosAtivos = spark.read.option('header', 'true').\
     csv(beneficiarios_ativos_estados,
     inferSchema=True, sep=";")
+
+# Filtro o dataframe com os dados que estão vazios para o motivo de cancelamento
+Beneficiarios_Ativos_filtro = beneficiariosAtivos.filter(beneficiariosAtivos.CD_BENE_MOTIV_CANCELAMENTO.isNull())
+#beneficiariosAtivos.show()
 
 # lendo os arquivos dos prestadores hospitalares com Spark
 PP_HOSPITALARES_FILES = sorted(glob(r'dadosFTP/Produtos e Prestadores Hospitalares/*.csv'))
@@ -52,11 +55,44 @@ tamanho = tb_idade_anos.count()
 PP_HOSPITALARES = PP_HOSPITALARES.withColumn("CD_OPERADORA", col("CD_OPERADORA").cast("integer"))
 
                                             #PK              
-PP_HOSPITALARES = PP_HOSPITALARES.select("ID_PLANO", "CD_OPERADORA", "CONTRATACAO", "DE_TIPO_CONTRATACAO")
+PP_HOSPITALARES = PP_HOSPITALARES.select("ID_PLANO", "CD_OPERADORA", "CONTRATACAO", "DE_TIPO_CONTRATACAO", "SG_UF")
+
+# PP_HOSPITALARES.count() # 37.944.888
+
+## Quantidade de Beneficiários por estado
+# RO = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'RO').count()
+# AC = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'AC').count()
+# AM = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'AM').count()
+# RR = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'RR').count()
+# PA = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'PA').count()
+# AP = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'AP').count()
+# TO = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'TO').count()
+# MA = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'MA').count()
+# PI = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'PI').count()
+# CE = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'CE').count()
+# RN = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'RN').count()
+# PB = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'PB').count()
+# PE = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'PE').count()
+# AL = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'AL').count()
+# SE = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'SE').count()
+# BA = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'BA').count()
+# MG = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'MG').count()
+# ES = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'ES').count()
+# RJ = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'RJ').count()
+# SP = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'SP').count()
+# PR = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'PR').count()
+# SC = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'AC').count()
+# RS = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'RS').count()
+# MS = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'MS').count()
+# MT = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'MT').count()
+# GO = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'GO').count()
+# DF = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'DF').count()
+
+
+
 
 ### ==================== DASH ====================
 
-# tentativa com o dash
 import dash
 from dash import dcc
 import dash_core_components as html
@@ -106,15 +142,27 @@ COLETIVO_ADESAO = PP_HOSPITALARES.filter(PP_HOSPITALARES.DE_TIPO_CONTRATACAO == 
 TIPO_BENEFICIARIOS = ["COLETIVO EMPRESARIAL", "INDIVIDUAL OU FAMILIAR", "COLETIVO POR ADESÃO"]
 COUNT_BENEFICIARIOS = [COLETIVO_EMPRESARIAL, INDIVIDUAL_FAMILIAR, COLETIVO_ADESAO]
 
-fig5 = px.pie(values=COUNT_BENEFICIARIOS, names=TIPO_BENEFICIARIOS)
-fig5.show()
+#### Beneficiários em Planos Coletivos
+
+## em relação aquela operadora, qual o percentual de beneficiários em planos coletivos?
+
+def sum(n1, n2, n3):
+    """Soma Total dos Beneficiários da Operadora"""
+    return n1 + n2 + n3
+
+BENEFICIARIOS_COLETIVO = (  (  COLETIVO_EMPRESARIAL + COLETIVO_ADESAO  ) / 
+                          sum(COLETIVO_EMPRESARIAL, INDIVIDUAL_FAMILIAR, COLETIVO_ADESAO) ) * 100
+
+
+# fig5 = px.pie(values=COUNT_BENEFICIARIOS, names=TIPO_BENEFICIARIOS)
+# fig5.show()
 
 ## CÁLCULOS DOS INDICADORES
-Idosos = (P60 / tamanhoOperadora) * 100 # 8.62%
+Idosos = (P60 / tamanhoOperadora) * 100 # 8.62
 
 RazaoDependencia = ((P15 + P60) / P1559) * 100 # 41.85
 
-IndiceEnvelhecimento = (P60 / P15) * 100 # 40.64%
+IndiceEnvelhecimento = (P60 / P15) * 100 # 40.64
 
 MediaAnos = tb_idade_anos.select(tb_idade_anos['Anos']).summary('mean').collect()[0]['Anos']
 MediaAnos = float(MediaAnos)
@@ -162,6 +210,15 @@ fig5.add_trace(go.Pie(
     labels=TIPO_BENEFICIARIOS, values=COUNT_BENEFICIARIOS, hole=.0
     ))
 
+fig6 = go.Figure()
+fig6.add_trace(go.Indicator(mode='number+delta',
+        title= {"text": f"<span style='font-size:65%'>Beneficiários em Plano Coletivo<span><br>"},
+        value= BENEFICIARIOS_COLETIVO,
+        number= {'suffix':'%'},
+        delta= {'relative':True, 'valueformat':'.1%', 'reference':BENEFICIARIOS_COLETIVO}               
+))
+
+
 
 # ======= LAYOUT ======= 
 
@@ -177,6 +234,7 @@ app.layout = dbc.Container(
 
             # Coluna 1.1
             dbc.Col([
+                dash.html.P("Percentual de Idosos"),
                 dbc.Card([
                     dbc.CardBody([
                         dcc.Graph(id='card1',  figure=fig1, className='dbc', config=config_graph)
@@ -186,6 +244,7 @@ app.layout = dbc.Container(
 
             # Coluna 1.2
             dbc.Col([
+                dash.html.P("Razão de Dependência"),
                 dbc.Card([
                     dbc.CardBody([
                         dcc.Graph(id='card2', figure=fig2, className='dbc', config=config_graph)
@@ -195,6 +254,7 @@ app.layout = dbc.Container(
 
             # Col 1.3
             dbc.Col([
+                dash.html.P("Índice de Envelhecimento"),
                 dbc.Card([
                     dbc.CardBody([
                         dcc.Graph(id='card3', figure=fig3, className='dbc', config=config_graph)
@@ -208,6 +268,7 @@ app.layout = dbc.Container(
 
             # Col 2.1
             dbc.Col([
+                dash.html.P("Idade Média"),
                 dbc.Card([
                     dbc.CardBody([
                         dcc.Graph(id='card4', figure=fig4, className='dbc', config=config_graph)
@@ -217,7 +278,7 @@ app.layout = dbc.Container(
 
             # Col 2.2
             dbc.Col([
-
+                dash.html.P("Beneficiários por tipo de contratação"),
                 dbc.Card([
                     dbc.CardBody([
                         dcc.Graph(id='card5', className='dbc', figure=fig5, config=config_graph)
@@ -227,10 +288,10 @@ app.layout = dbc.Container(
             
             # Col 3
             dbc.Col([
-                
+                dash.html.P("Percentual de beneficiários em Planos Coletivos"),
                 dbc.Card([
                     dbc.CardBody([
-                        dcc.Graph(id='card6', className='dbc', config=config_graph)
+                        dcc.Graph(id='card6', className='dbc', figure=fig6, config=config_graph)
                     ]),
                 ],style=tab_card),
             ]),
