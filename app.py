@@ -59,38 +59,6 @@ PP_HOSPITALARES = PP_HOSPITALARES.select("ID_PLANO", "CD_OPERADORA", "CONTRATACA
 
 # PP_HOSPITALARES.count() # 37.944.888
 
-## Quantidade de Beneficiários por estado
-# RO = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'RO').count()
-# AC = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'AC').count()
-# AM = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'AM').count()
-# RR = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'RR').count()
-# PA = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'PA').count()
-# AP = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'AP').count()
-# TO = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'TO').count()
-# MA = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'MA').count()
-# PI = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'PI').count()
-# CE = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'CE').count()
-# RN = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'RN').count()
-# PB = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'PB').count()
-# PE = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'PE').count()
-# AL = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'AL').count()
-# SE = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'SE').count()
-# BA = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'BA').count()
-# MG = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'MG').count()
-# ES = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'ES').count()
-# RJ = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'RJ').count()
-# SP = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'SP').count()
-# PR = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'PR').count()
-# SC = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'AC').count()
-# RS = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'RS').count()
-# MS = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'MS').count()
-# MT = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'MT').count()
-# GO = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'GO').count()
-# DF = Beneficiarios_Ativos_filtro.filter(Beneficiarios_Ativos_filtro.SG_UF == 'DF').count()
-
-
-
-
 ### ==================== DASH ====================
 
 import dash
