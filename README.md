@@ -7,7 +7,7 @@
 
 <hr >
 
-O Objetivo principal desse projeto era realizar a apresentação de indicadores de saúde, contidos nas bases da ANS, para que pudessemos analisar e apresentá-los via Python utilizando a biblioteca `dash`. Por meio desta biblioteca, podemos montar o layout da página web onde o dashboard seria apresentado.
+O Objetivo principal desse projeto era realizar a apresentação de indicadores de saúde, contidos nas bases da ANS, para que pudessemos analisar e apresentá-los via Python utilizando a biblioteca `dash`, na v1 e a biblioteca `streamlit` como v2. Por meio desta biblioteca, podemos montar o layout da página web onde o dashboard seria apresentado.
 
 ## Dados
 
