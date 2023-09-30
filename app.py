@@ -4,7 +4,7 @@ from pyspark.sql.functions import *
 
 ## ========== CONFIGURAÇÕES ==========
 
-tab_card = {'height': '100%'}
+tab_card = {'height': '50%'}
 
 config_graph={"displayModeBar": False, "showTips": False}
 
@@ -69,7 +69,6 @@ import dash_bootstrap_components as dbc
 
 import plotly.express as px
 import plotly.graph_objects as go
-import matplotlib.pyplot as plt
 
 ## Populações & Indicadores
 ### CÁLCULOS COM BASE NA METODOLOGIA PROPOSTA EM https://www.gov.br/ans/pt-br/arquivos/acesso-a-informacao/perfil-do-setor/dados-e-indicadores-do-setor/informacoes-gerais/manual-sala-de-situacao.pdf
@@ -140,7 +139,7 @@ MediaAnos = float(MediaAnos)
 
 fig1 = go.Figure()
 fig1.add_trace(go.Indicator(mode='number+delta',
-        title= {"text": f"<span style='font-size:85%'>Percentual de Idosos<span><br>"},
+        # title= {"text": f"<span style='font-size:85%'>Percentual de Idosos<span><br>"},
         value= Idosos,
         number= {'suffix':'%'},
         delta= {'relative':True, 'valueformat':'.1%', 'reference':Idosos}               
@@ -149,7 +148,7 @@ fig1.add_trace(go.Indicator(mode='number+delta',
 
 fig2 = go.Figure()
 fig2.add_trace(go.Indicator(mode='number+delta',
-        title= {"text": f"<span style='font-size:85%'>Razão de Dependência<span><br>"},
+        # title= {"text": f"<span style='font-size:85%'>Razão de Dependência<span><br>"},
         value= RazaoDependencia,
         number= {'suffix':'%'},
         delta= {'relative':True, 'valueformat':'.1%', 'reference':RazaoDependencia}               
@@ -158,7 +157,7 @@ fig2.add_trace(go.Indicator(mode='number+delta',
 
 fig3 = go.Figure()
 fig3.add_trace(go.Indicator(mode='number+delta',
-        title= {"text": f"<span style='font-size:85%'>Índice de Envelhecimento<span><br>"},
+        # title= {"text": f"<span style='font-size:85%'>Índice de Envelhecimento<span><br>"},
         value= IndiceEnvelhecimento,
         number= {'suffix':'%'},
         delta= {'relative':True, 'valueformat':'.1%', 'reference':IndiceEnvelhecimento}               
@@ -166,7 +165,7 @@ fig3.add_trace(go.Indicator(mode='number+delta',
 
 fig4 = go.Figure()
 fig4.add_trace(go.Indicator(mode='number+delta',
-        title= {"text": f"<span style='font-size:85%'>Idade Média<span><br>"},
+        # title= {"text": f"<span style='font-size:85%'>Idade Média<span><br>"},
         value= MediaAnos,
         number= {'suffix':' Anos'},
         delta= {'relative':True, 'valueformat':'.1%', 'reference':MediaAnos}               
@@ -180,7 +179,7 @@ fig5.add_trace(go.Pie(
 
 fig6 = go.Figure()
 fig6.add_trace(go.Indicator(mode='number+delta',
-        title= {"text": f"<span style='font-size:65%'>Beneficiários em Plano Coletivo<span><br>"},
+        # title= {"text": f"<span style='font-size:65%'>Beneficiários em Plano Coletivo<span><br>"},
         value= BENEFICIARIOS_COLETIVO,
         number= {'suffix':'%'},
         delta= {'relative':True, 'valueformat':'.1%', 'reference':BENEFICIARIOS_COLETIVO}               
