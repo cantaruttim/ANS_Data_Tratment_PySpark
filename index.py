@@ -64,17 +64,23 @@ import pandas as pd
 ## Populações & Indicadores
 
 ## retirando os valores das operadoas
-operadoras = tb_idade_anos.select("CD_OPERADORA")
-# Converta a coluna em uma lista de valores
-valores_operadoras = [row.CD_OPERADORA for row in operadoras.distinct().collect()]
-valores_operadoras = set(valores_operadoras) # conjunto set
-valores_operadoras = sorted(list(valores_operadoras)) # converte em lista de forma crescente
+# operadoras = tb_idade_anos.select("CD_OPERADORA")
+# # Converta a coluna em uma lista de valores
+# valores_operadoras = [row.CD_OPERADORA for row in operadoras.distinct().collect()]
+# valores_operadoras = set(valores_operadoras) # conjunto set
+# valores_operadoras = sorted(list(valores_operadoras)) # converte em lista de forma crescente
 
-operadoras = {"Operadoras":valores_operadoras}
+# operadoras = {"Operadoras":valores_operadoras}
+# df = pd.DataFrame(operadoras)
+# import pandas as pd
+# df = pd.read_csv("CD_OPERADORAS.csv", sep = ";")
+# df.drop('Unnamed: 0', axis=1, inplace=True)
+# df = df.iloc[0:16, 0]
 
-df = pd.DataFrame(operadoras)
+operadoras = [368253, 359017, 5711, 326305, 6246, 339679, 343889, 701, 393321, 352501, 304701, 346659, 348520, 302147, 335690]
 
-operadora = df['Operadoras'][6]
+######## 
+operadora = operadoras[14]     ### EXEMPLO PARA O BRADESCO 5711
 tamanhoOperadora = tb_idade_anos.filter(tb_idade_anos.CD_OPERADORA == operadora).count() # Total de beneficiários da operadora
 tamanhoHOSPITALARES = PP_HOSPITALARES.count() # 37.944.888
 
@@ -137,52 +143,26 @@ fig.add_trace(go.Pie(
     ))
 
 
+# ## INDICADORES TABULADOS
+# dados_unimedcampinas = {
+#     'Beneficiários Totais': tamanhoOperadora,
+#     'Tamanho da PP_HOSPITALARES':tamanhoHOSPITALARES,
+#     'P15': P15,
+#     'P60': P60,
+#     'P1559': P1559,
+#     'COLETIVO EMPRESARIAL': COLETIVO_EMPRESARIAL,
+#     'INDIVIDUAL OU FAMILIAR': INDIVIDUAL_FAMILIAR,
+#     'COLETIVO ADESÃO': COLETIVO_ADESAO,
+#     'TOTAL EM COLETIVO': COLETIVO,
+#     'TOTAL': TOTAL,
+#     'PERCENTUAL EM COLETIVO':BENEFICIARIOS_COLETIVO,
+#     'IDOSOS':Idosos,
+#     'RAZÃO DE DEPENDÊNCIA':RazaoDependencia,
+#     'ÍNDICE DE ENVELHECIMENTO':IndiceEnvelhecimento,
+#     'IDADE MÉDIA': MediaAnos,
+#     'GRÁFICO': fig    
 
-# ======= LAYOUT =======
-import streamlit as st
-import plost
+# }
 
-#### Sidebar
-st.set_page_config(layout='wide', initial_sidebar_state='expanded')
-
-
-st.sidebar.header('Operadoras')
-cd_operadoras = st.sidebar.selectbox('Selecione a Operadora',
-                                     placeholder="Selecione a Operadora", 
-                                     index=6, 
-                                     options= df['Operadoras'].values
-                                     )
-
-st.sidebar.markdown('''
----
-Created by [Matheus de Almeida Cantarutti](https://www.linkedin.com/in/matheusalmeidacantarutti/).
-''')
-
-with open('style.css') as f:
-    st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-
-
-### Dashboard
-st.markdown('### Indicadores Carteira')
-
-col1, col2, col3 = st.columns(3)
-col4, col5, col6 = st.columns(3)
-
-# Row 1
-col1, col2, col3 = st.columns((2.5,2.5,2.5))
-with col1:
-    col1.metric(label="Percentual de Idosos", value=f'{Idosos:.1f}'"%")
-with col2:
-    col2.metric(label="Razão de Dependência", value=f'{RazaoDependencia:.1f}'"%")
-with col3:
-    col3.metric(label="Índice de Envelhecimento", value=f'{IndiceEnvelhecimento:.1f}'"%")
-
-# Row 2
-col4, col5, col6 = st.columns((2.5,2.5,2.5))
-with col4:
-    col4.metric(label="Idade Média", value=f'{MediaAnos:.1f}'" Anos")
-with col5:
-    st.markdown("### Beneficiários em Planos Coletivos")
-    col5.metric(label="Beneficiários em Planos coletivos", value=f'{BENEFICIARIOS_COLETIVO:.1f}'"%")
-with col6:
-    col6.plotly_chart(fig)
+# dados_unimedcampinas = pd.DataFrame(dados_unimedcampinas)
+# dados_unimedcampinas.to_csv('dados Selecionados/dados_unimedcampinas.csv')
