@@ -79,7 +79,8 @@ import pandas as pd
 
 operadoras = [368253, 359017, 5711, 326305, 6246, 339679, 343889, 701, 393321, 352501, 304701, 346659, 348520, 302147, 335690]
 
-######## 
+########
+# for i in range(len(operadoras)): 
 operadora = operadoras[14]     ### EXEMPLO PARA O BRADESCO 5711
 tamanhoOperadora = tb_idade_anos.filter(tb_idade_anos.CD_OPERADORA == operadora).count() # Total de beneficiários da operadora
 tamanhoHOSPITALARES = PP_HOSPITALARES.count() # 37.944.888
@@ -109,7 +110,7 @@ INDIVIDUAL_FAMILIAR = PP_HOSPITALARES.filter(PP_HOSPITALARES.DE_TIPO_CONTRATACAO
     .where(PP_HOSPITALARES.CD_OPERADORA == operadora).count() # Bradesco = 79.582 
 
 # COLETIVO POR ADESAO
-COLETIVO_ADESAO = PP_HOSPITALARES.filter(PP_HOSPITALARES.DE_TIPO_CONTRATACAO == "COLETIVO POR ADESÃO") \
+COLETIVO_ADESAO = PP_HOSPITALARES.filter(PP_HOSPITALARES.DE_TIPO_CONTRATACAO == "COLETIVO POR ADESAO") \
     .where(PP_HOSPITALARES.CD_OPERADORA == operadora).count() # Bradesco = 00
 
 
@@ -143,26 +144,26 @@ fig.add_trace(go.Pie(
     ))
 
 
-# ## INDICADORES TABULADOS
-# dados_unimedcampinas = {
-#     'Beneficiários Totais': tamanhoOperadora,
-#     'Tamanho da PP_HOSPITALARES':tamanhoHOSPITALARES,
-#     'P15': P15,
-#     'P60': P60,
-#     'P1559': P1559,
-#     'COLETIVO EMPRESARIAL': COLETIVO_EMPRESARIAL,
-#     'INDIVIDUAL OU FAMILIAR': INDIVIDUAL_FAMILIAR,
-#     'COLETIVO ADESÃO': COLETIVO_ADESAO,
-#     'TOTAL EM COLETIVO': COLETIVO,
-#     'TOTAL': TOTAL,
-#     'PERCENTUAL EM COLETIVO':BENEFICIARIOS_COLETIVO,
-#     'IDOSOS':Idosos,
-#     'RAZÃO DE DEPENDÊNCIA':RazaoDependencia,
-#     'ÍNDICE DE ENVELHECIMENTO':IndiceEnvelhecimento,
-#     'IDADE MÉDIA': MediaAnos,
-#     'GRÁFICO': fig    
+## INDICADORES TABULADOS
+dados = {
+    'Beneficiários Totais': tamanhoOperadora,
+    'Tamanho da PP_HOSPITALARES':tamanhoHOSPITALARES,
+    'P15': P15,
+    'P60': P60,
+    'P1559': P1559,
+    'COLETIVO EMPRESARIAL': COLETIVO_EMPRESARIAL,
+    'INDIVIDUAL OU FAMILIAR': INDIVIDUAL_FAMILIAR,
+    'COLETIVO ADESÃO': COLETIVO_ADESAO,
+    'TOTAL EM COLETIVO': COLETIVO,
+    'TOTAL': TOTAL,
+    'PERCENTUAL EM COLETIVO':BENEFICIARIOS_COLETIVO,
+    'IDOSOS':Idosos,
+    'RAZÃO DE DEPENDÊNCIA':RazaoDependencia,
+    'ÍNDICE DE ENVELHECIMENTO':IndiceEnvelhecimento,
+    'IDADE MÉDIA': MediaAnos,
+    'GRÁFICO': fig    
 
-# }
+}
 
-# dados_unimedcampinas = pd.DataFrame(dados_unimedcampinas)
-# dados_unimedcampinas.to_csv('dados Selecionados/dados_unimedcampinas.csv')
+dados = pd.DataFrame(dados)
+dados.to_csv('dados Selecionados/dados_unimedcampinas.csv')
