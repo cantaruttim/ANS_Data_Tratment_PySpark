@@ -1,5 +1,6 @@
 boto3
 python-dotenv
+psycopg[binary]
 
 [dev]
 pytest

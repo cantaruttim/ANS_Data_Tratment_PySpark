@@ -83,3 +83,21 @@ def test_read_object(settings, mock_s3_client):
     assert result == b"id;value\n1;100"
 
     mock_body.close.assert_called_once()
+
+@pytest.fixture
+def settings():
+    return Settings(
+        # RustFS
+        s3_endpoint_url="http://localhost:9000",
+        s3_bucket_name="ans-data-lake",
+        s3_region="us-east-1",
+        s3_access_key="test-access-key",
+        s3_secret_key="test-secret-key",
+
+        # PostgreSQL
+        postgres_host="localhost",
+        postgres_port=5434,
+        postgres_db="ans_intelligence",
+        postgres_user="test-user",
+        postgres_password="test-password",
+    )

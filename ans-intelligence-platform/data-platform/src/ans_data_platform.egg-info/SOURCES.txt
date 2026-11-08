@@ -6,7 +6,9 @@ src/ans_data_platform.egg-info/dependency_links.txt
 src/ans_data_platform.egg-info/requires.txt
 src/ans_data_platform.egg-info/top_level.txt
 src/ans_data_platform/config/__init__.py
+src/ans_data_platform/config/logging_config.py
 src/ans_data_platform/config/settings.py
 src/ans_data_platform/storage/__init__.py
+src/ans_data_platform/storage/postgres_client.py
 src/ans_data_platform/storage/rustfs_client.py
 tests/test_rustfs_client.py
