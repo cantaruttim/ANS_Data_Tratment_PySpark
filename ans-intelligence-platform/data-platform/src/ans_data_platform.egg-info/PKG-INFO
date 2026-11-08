@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: ans-data-platform
+Version: 0.1.0
+Summary: Data engineering platform for ANS open data
+Requires-Python: >=3.12
+Requires-Dist: boto3
+Requires-Dist: python-dotenv
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
