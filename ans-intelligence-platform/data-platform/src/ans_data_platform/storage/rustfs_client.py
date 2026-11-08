@@ -7,7 +7,9 @@ from botocore.config import Config
 
 from ans_data_platform.config.settings import Settings
 
+
 logger = logging.getLogger(__name__)
+
 
 class RustFSClient:
     def __init__(self, settings: Settings):
@@ -26,12 +28,18 @@ class RustFSClient:
         )
 
     def list_buckets(self) -> list[str]:
+        logger.debug("Listing available buckets")
+
         response = self.client.list_buckets()
 
-        return [
+        buckets = [
             bucket["Name"]
             for bucket in response.get("Buckets", [])
         ]
+
+        logger.info("Retrieved %d buckets", len(buckets))
+
+        return buckets
 
     def upload_file(
         self,
@@ -41,9 +49,13 @@ class RustFSClient:
         source = Path(file_path)
 
         if not source.is_file():
+            logger.warning("File not found: %s", source)
+
             raise FileNotFoundError(
                 f"File not found: {source}"
             )
+
+        logger.info("Starting upload: %s", object_key)
 
         self.client.upload_file(
             str(source),
@@ -51,7 +63,11 @@ class RustFSClient:
             object_key,
         )
 
+        logger.info("Upload completed: %s", object_key)
+
     def read_object(self, object_key: str) -> bytes:
+        logger.info("Reading object: %s", object_key)
+
         response = self.client.get_object(
             Bucket=self.bucket_name,
             Key=object_key,
@@ -60,79 +76,15 @@ class RustFSClient:
         body = response["Body"]
 
         try:
-            return body.read()
+            content = body.read()
+
+            logger.info(
+                "Object read successfully: %s (%d bytes)",
+                object_key,
+                len(content),
+            )
+
+            return content
+
         finally:
             body.close()
-
-
-def list_buckets(self) -> list[str]:
-    logger.debug("Listing available buckets")
-
-    response = self.client.list_buckets()
-
-    buckets = [
-        bucket["Name"]
-        for bucket in response.get("Buckets", [])
-    ]
-
-    logger.info("Retrieved %d buckets", len(buckets))
-
-    return buckets
-
-
-def upload_file(
-    self,
-    file_path: str | Path,
-    object_key: str,
-) -> None:
-    source = Path(file_path)
-
-    if not source.is_file():
-        logger.warning("File not found: %s", source)
-        raise FileNotFoundError(
-            f"File not found: {source}"
-        )
-
-    logger.info(
-        "Starting upload: %s",
-        object_key,
-    )
-
-    self.client.upload_file(
-        str(source),
-        self.bucket_name,
-        object_key,
-    )
-
-    logger.info(
-        "Upload completed: %s",
-        object_key,
-    )
-
-
-def read_object(self, object_key: str) -> bytes:
-    logger.info(
-        "Reading object: %s",
-        object_key,
-    )
-
-    response = self.client.get_object(
-        Bucket=self.bucket_name,
-        Key=object_key,
-    )
-
-    body = response["Body"]
-
-    try:
-        content = body.read()
-
-        logger.info(
-            "Object read successfully: %s (%d bytes)",
-            object_key,
-            len(content),
-        )
-
-        return content
-
-    finally:
-        body.close()
