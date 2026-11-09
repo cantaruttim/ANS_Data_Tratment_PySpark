@@ -206,3 +206,100 @@ def test_mark_running_invalid_transition(
         match="was not found or is not in PENDING status",
     ):
         ingestion_run_repository.mark_running(run_id)
+
+
+def test_mark_succeeded(
+    ingestion_run_repository,
+    mock_connection,
+):
+    run_id = UUID("c12861bd-496f-4cdc-ac54-da5b8fa10c24")
+
+    mock_connection.execute.return_value.fetchone.return_value = (
+        run_id,
+    )
+
+    ingestion_run_repository.mark_succeeded(run_id)
+
+    query, values = mock_connection.execute.call_args.args
+
+    assert "UPDATE ingestion_runs" in query
+    assert "finished_at = CURRENT_TIMESTAMP" in query
+    assert "status = 'RUNNING'" in query
+    assert values == ("SUCCEEDED", None, run_id)
+
+
+def test_mark_partial(
+    ingestion_run_repository,
+    mock_connection,
+):
+    run_id = UUID("c12861bd-496f-4cdc-ac54-da5b8fa10c24")
+    error_message = "Some files failed during ingestion."
+
+    mock_connection.execute.return_value.fetchone.return_value = (
+        run_id,
+    )
+
+    ingestion_run_repository.mark_partial(
+        run_id,
+        error_message,
+    )
+
+    _, values = mock_connection.execute.call_args.args
+
+    assert values == ("PARTIAL", error_message, run_id)
+
+
+def test_mark_failed(
+    ingestion_run_repository,
+    mock_connection,
+):
+    run_id = UUID("c12861bd-496f-4cdc-ac54-da5b8fa10c24")
+    error_message = "FTP connection failed."
+
+    mock_connection.execute.return_value.fetchone.return_value = (
+        run_id,
+    )
+
+    ingestion_run_repository.mark_failed(
+        run_id,
+        error_message,
+    )
+
+    _, values = mock_connection.execute.call_args.args
+
+    assert values == ("FAILED", error_message, run_id)
+
+
+def test_mark_cancelled(
+    ingestion_run_repository,
+    mock_connection,
+):
+    run_id = UUID("c12861bd-496f-4cdc-ac54-da5b8fa10c24")
+    reason = "Execution cancelled by user."
+
+    mock_connection.execute.return_value.fetchone.return_value = (
+        run_id,
+    )
+
+    ingestion_run_repository.mark_cancelled(run_id, reason)
+
+    query, values = mock_connection.execute.call_args.args
+
+    assert "UPDATE ingestion_runs" in query
+    assert "'PENDING', 'RUNNING'" in query
+    assert values == (reason, run_id)
+
+
+def test_mark_succeeded_invalid_transition(
+    ingestion_run_repository,
+    mock_connection,
+):
+    run_id = UUID("c12861bd-496f-4cdc-ac54-da5b8fa10c24")
+
+    mock_connection.execute.return_value.fetchone.return_value = None
+
+    with pytest.raises(
+        ValueError,
+        match="was not found or is not in RUNNING status",
+    ):
+        ingestion_run_repository.mark_succeeded(run_id)

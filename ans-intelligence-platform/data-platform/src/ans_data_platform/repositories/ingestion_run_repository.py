@@ -126,3 +126,101 @@ class IngestionRunRepository:
             run_id,
         )
 
+    
+    def _finish_running(
+        self,
+        run_id: UUID,
+        status: str,
+        error_message: str | None = None,
+    ) -> None:
+
+        query = """
+            UPDATE ingestion_runs
+            SET
+                status = %s,
+                finished_at = CURRENT_TIMESTAMP,
+                error_message = %s
+            WHERE id = %s
+              AND status = 'RUNNING'
+            RETURNING id;
+        """
+
+        result = self.connection.execute(
+            query,
+            (status, error_message, run_id),
+        ).fetchone()
+
+        if result is None:
+            raise ValueError(
+                f"Ingestion run '{run_id}' was not found "
+                "or is not in RUNNING status."
+            )
+
+        logger.info(
+            "Ingestion run finished: %s (Status: %s)",
+            run_id,
+            status,
+        )
+
+    def mark_succeeded(self, run_id: UUID) -> None:
+        self._finish_running(
+            run_id=run_id,
+            status="SUCCEEDED",
+        )
+
+    def mark_partial(
+        self,
+        run_id: UUID,
+        error_message: str | None = None,
+    ) -> None:
+        self._finish_running(
+            run_id=run_id,
+            status="PARTIAL",
+            error_message=error_message,
+        )
+
+    def mark_failed(
+        self,
+        run_id: UUID,
+        error_message: str,
+    ) -> None:
+        self._finish_running(
+            run_id=run_id,
+            status="FAILED",
+            error_message=error_message,
+        )
+
+    def mark_cancelled(
+        self,
+        run_id: UUID,
+        reason: str | None = None,
+    ) -> None:
+
+        query = """
+            UPDATE ingestion_runs
+            SET
+                status = 'CANCELLED',
+                finished_at = CURRENT_TIMESTAMP,
+                error_message = %s
+            WHERE id = %s
+              AND status IN ('PENDING', 'RUNNING')
+            RETURNING id;
+        """
+
+        result = self.connection.execute(
+            query,
+            (reason, run_id),
+        ).fetchone()
+
+        if result is None:
+            raise ValueError(
+                f"Ingestion run '{run_id}' was not found "
+                "or cannot be cancelled from its current status."
+            )
+
+        logger.info(
+            "Ingestion run cancelled: %s",
+            run_id,
+        )
+
+
