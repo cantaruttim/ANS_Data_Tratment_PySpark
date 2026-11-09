@@ -221,3 +221,146 @@ def test_list_ingested_files_by_run_id_empty(
     result = ingested_file_repository.list_by_run_id(run_id)
 
     assert result == []
+
+
+def test_mark_downloaded(
+    ingested_file_repository,
+    mock_connection,
+):
+    mock_connection.execute.return_value.fetchone.return_value = (10,)
+
+    checksum = (
+        "79d58b38633c27f9ba0a0eab34ba8a0b"
+        "68d24f8789fceae2429162ca4c4c9c38"
+    )
+
+    ingested_file_repository.mark_downloaded(
+        file_id=10,
+        checksum_sha256=checksum,
+        file_size_bytes=46,
+    )
+
+    query, values = mock_connection.execute.call_args.args
+
+    assert "status = 'DOWNLOADED'" in query
+    assert "downloaded_at = CURRENT_TIMESTAMP" in query
+    assert "status = 'DISCOVERED'" in query
+    assert values == (checksum, 46, 10)
+
+
+def test_mark_downloaded_invalid_transition(
+    ingested_file_repository,
+    mock_connection,
+):
+    mock_connection.execute.return_value.fetchone.return_value = None
+
+    with pytest.raises(
+        ValueError,
+        match="was not found or is not in DISCOVERED status",
+    ):
+        ingested_file_repository.mark_downloaded(
+            file_id=10,
+            checksum_sha256="a" * 64,
+            file_size_bytes=46,
+        )
+
+
+def test_mark_stored(
+    ingested_file_repository,
+    mock_connection,
+):
+    mock_connection.execute.return_value.fetchone.return_value = (10,)
+
+    object_key = "bronze/test/file.csv"
+
+    ingested_file_repository.mark_stored(
+        file_id=10,
+        object_key=object_key,
+    )
+
+    query, values = mock_connection.execute.call_args.args
+
+    assert "status = 'STORED'" in query
+    assert "stored_at = CURRENT_TIMESTAMP" in query
+    assert "status = 'DOWNLOADED'" in query
+    assert values == (object_key, 10)
+
+
+def test_mark_stored_invalid_transition(
+    ingested_file_repository,
+    mock_connection,
+):
+    mock_connection.execute.return_value.fetchone.return_value = None
+
+    with pytest.raises(
+        ValueError,
+        match="was not found or is not in DOWNLOADED status",
+    ):
+        ingested_file_repository.mark_stored(
+            file_id=10,
+            object_key="bronze/test/file.csv",
+        )
+
+
+def test_mark_failed(
+    ingested_file_repository,
+    mock_connection,
+):
+    mock_connection.execute.return_value.fetchone.return_value = (10,)
+
+    error_message = "RustFS upload failed."
+
+    ingested_file_repository.mark_failed(
+        file_id=10,
+        error_message=error_message,
+    )
+
+    query, values = mock_connection.execute.call_args.args
+
+    assert "status = 'FAILED'" in query
+    assert "DISCOVERED', 'DOWNLOADED'" in query
+    assert values == (error_message, 10)
+
+
+def test_mark_failed_invalid_transition(
+    ingested_file_repository,
+    mock_connection,
+):
+    mock_connection.execute.return_value.fetchone.return_value = None
+
+    with pytest.raises(
+        ValueError,
+        match="cannot be marked as FAILED",
+    ):
+        ingested_file_repository.mark_failed(
+            file_id=10,
+            error_message="Upload failed.",
+        )
+
+
+def test_mark_skipped(
+    ingested_file_repository,
+    mock_connection,
+):
+    mock_connection.execute.return_value.fetchone.return_value = (10,)
+
+    ingested_file_repository.mark_skipped(file_id=10)
+
+    query, values = mock_connection.execute.call_args.args
+
+    assert "status = 'SKIPPED'" in query
+    assert "status = 'DISCOVERED'" in query
+    assert values == (10,)
+
+
+def test_mark_skipped_invalid_transition(
+    ingested_file_repository,
+    mock_connection,
+):
+    mock_connection.execute.return_value.fetchone.return_value = None
+
+    with pytest.raises(
+        ValueError,
+        match="cannot be marked as SKIPPED",
+    ):
+        ingested_file_repository.mark_skipped(file_id=10)
