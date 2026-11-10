@@ -9,10 +9,10 @@ logger = logging.getLogger(__name__)
 
 
 class IngestionService:
-    def __init__(
-        self,
-        postgres: PostgresClient,
-        storage: RustFSClient,
-    ):
+    """
+        Ingestão de dependência. 
+        Será usado para orquestrar toda a parte da infra (+ teste)
+    """
+    def __init__(self, postgres: PostgresClient, storage: RustFSClient):
         self.postgres = postgres
         self.storage = storage
